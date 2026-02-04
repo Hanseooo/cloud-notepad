@@ -7,9 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
-    /* Refined Design Tokens */
     :root {
       --bg: #09090b;
       --panel: #121214;
@@ -21,347 +21,265 @@
       --success: #10b981;
       --error: #ef4444;
       --radius: 8px;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    
-    body {
-      margin: 0;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      display: flex;
-      justify-content: center;
-      padding: 60px 24px;
-    }
+    html, body { height: 100%; margin: 0; background-color: var(--bg); color: var(--text); }
+    body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; display: flex; justify-content: center; padding: 40px 24px; }
 
-    .wrap { width: 100%; max-width: 1100px; position: relative; }
+    .wrap { width: 100%; max-width: 1200px; position: relative; }
 
-    /* Elegant background element - replaced massive skew with subtle typography */
-    .hero-type {
-      position: fixed; right: 40px; bottom: 40px; pointer-events: none; z-index: 0;
-      font-weight: 300; color: rgba(255, 255, 255, 0.02);
-      font-size: 12vw; line-height: 1; user-select: none;
-      letter-spacing: -0.05em;
-    }
-    .hero-type .sub { display: none; } /* Hide the extra layer for elegance */
+    header { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
+    .logo { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-weight: 500; color: var(--accent); border: 1px solid var(--accent); }
+    h1 { margin: 0; font-size: 20px; font-weight: 500; }
+    .subtitle { color: var(--muted); font-size: 13px; }
 
-    header { 
-      position: relative; z-index: 2; 
-      display: flex; align-items: center; 
-      gap: 20px; margin-bottom: 40px; 
-    }
-    
-    .logo { 
-      width: 42px; height: 42px; border-radius: 50%; 
-      display: grid; place-items: center; 
-      font-weight: 500; font-size: 14px;
-      color: var(--accent); 
-      border: 1px solid var(--accent);
-      background: transparent;
-    }
-    
-    h1 { margin: 0; font-size: 20px; font-weight: 500; letter-spacing: -0.02em; }
-    .subtitle { margin-top: 4px; color: var(--muted); font-size: 13px; font-weight: 400; }
+    .grid-main { display: grid; grid-template-columns: 320px 1fr; gap: 30px; align-items: start; }
 
-    /* Layout */
-    .grid-main { 
-      display: grid; 
-      grid-template-columns: 320px 1fr; 
-      gap: 40px; 
-      align-items: start; 
-      z-index: 2; 
-    }
+    .side-card, .editor-container { background: var(--panel); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+    .side-card { padding: 20px; max-height: 85vh; overflow-y: auto; }
 
-    /* Cards */
-    .side-card, .editor-card { 
-      background: var(--panel); 
-      border-radius: var(--radius); 
-      border: 1px solid var(--border);
-      transition: border-color 0.3s ease;
-    }
+    .field { margin-bottom: 16px; }
+    label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
 
-    .side-card { padding: 24px; }
+    input, textarea { width: 100%; padding: 10px; background: var(--input-bg); border-radius: 6px; color: var(--text); border: 1px solid var(--border); outline: none; font-size: 13px; }
+    input:focus { border-color: var(--accent); }
 
-    /* Forms */
-    .field { margin-bottom: 20px; }
-    label { 
-      display: block; font-size: 11px; 
-      text-transform: uppercase; letter-spacing: 0.05em;
-      color: var(--muted); font-weight: 600; margin-bottom: 8px; 
-    }
+    /* Image Gallery UX */
+    .image-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .image-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+    .img-card { position: relative; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); background: #000; aspect-ratio: 1; cursor: pointer; }
+    .img-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.2s; }
+    .img-card:hover img { opacity: 1; }
+    .img-card .img-name { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); font-size: 9px; padding: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    input, textarea, select {
-      width: 100%; padding: 10px 14px; 
-      background: var(--input-bg); 
-      border-radius: 6px; color: var(--text);
-      border: 1px solid var(--border); 
-      outline: none; font-size: 13px; 
-      transition: all 0.2s ease;
-    }
-    input:focus, textarea:focus { 
-      border-color: var(--accent); 
-      background: rgba(255,255,255,0.05);
-    }
+    /* Workspace / Editor UX */
+    .editor-header { display: flex; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+    .tab-btn { padding: 12px 20px; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; border-right: 1px solid var(--border); }
+    .tab-btn.active { color: var(--accent); background: var(--input-bg); }
 
-    .controls-row { display: flex; gap: 12px; }
+    #editor, #preview { height: 600px; padding: 25px; line-height: 1.6; }
+    #preview { overflow-y: auto; display: none; background: var(--bg); }
+    #preview img { max-width: 100%; border-radius: 4px; }
+    textarea#editor { font-family: 'SFMono-Regular', monospace; resize: none; border: none; }
 
-    /* Refined Buttons */
-    .btn { 
-      display: inline-flex; align-items: center; justify-content: center;
-      gap: 8px; padding: 8px 16px; border-radius: 6px; 
-      font-size: 13px; font-weight: 500; cursor: pointer; 
-      border: 1px solid transparent; transition: all 0.2s ease;
-    }
-    .btn-primary { 
-      background: var(--text); color: var(--bg); 
-    }
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-    
-    .btn-ghost { 
-      background: transparent; color: var(--muted); 
-      border: 1px solid var(--border); 
-    }
-    .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: 0.2s; }
+    .btn-primary { background: var(--accent); color: white; width: 100%; }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
 
-    .btn:active { transform: translateY(0); }
-    .btn[disabled] { opacity: 0.3; cursor: not-allowed; }
-
-    /* Status Indicators */
-    .status { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
-    .status.success { color: var(--success); }
-    .status.error { color: var(--error); }
-    
-    .spinner { 
-      width: 14px; height: 14px; border-radius: 50%; 
-      border: 1.5px solid rgba(255,255,255,0.1); 
-      border-top-color: var(--accent); 
-      animation: spin 0.8s linear infinite; 
-    }
-
-    /* Editor */
-    .editor-card { padding: 8px; }
-    textarea#editor { 
-      height: 600px; border: none; background: transparent;
-      font-family: 'SFMono-Regular', Menlo, monospace; 
-      font-size: 14px; line-height: 1.6; resize: none;
-      padding: 20px;
-    }
-
-    /* Subtle Entrance Animation */
-    .side-card, .editor-card, header { 
-      animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-    }
-
-    @keyframes fadeIn { 
-      from { opacity: 0; transform: translateY(10px); } 
-      to { opacity: 1; transform: translateY(0); } 
-    }
+    .status { font-size: 11px; color: var(--muted); margin-top: 15px; display: flex; align-items: center; gap: 8px; }
+    .spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    @media (max-width: 980px) { 
-      .grid-main { grid-template-columns: 1fr; gap: 24px; } 
-      textarea#editor { height: 400px; } 
-    }
-
-    /* Accent pulse for save hint - softened */
-    .pulse { animation: pulse 1.5s ease-out; }
-    @keyframes pulse { 
-      0% { border-color: var(--border); } 
-      50% { border-color: var(--accent); } 
-      100% { border-color: var(--border); } 
-    }
 
   </style>
 </head>
 <body>
 
 <div class="wrap">
-  <div class="hero-type" aria-hidden="true">WRITE.</div>
-
   <header>
     <div class="logo">CN</div>
     <div>
       <h1>Cloud Notepad</h1>
-      <div class="subtitle">A minimalist markdown-ready editor for GitHub</div>
+      <div class="subtitle">Press <kbd>Ctrl+S</kbd> to save notes</div>
     </div>
   </header>
 
   <main class="grid-main">
     <aside class="side-card">
       <div class="field">
-        <label for="token">GitHub Token</label>
-        <input id="token" type="password" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
+        <label>GitHub Token</label>
+        <input id="token" type="password" value="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" />
       </div>
 
       <div class="field">
-        <label for="repo">Repository</label>
-        <input id="repo" placeholder="user/notes-vault" />
+        <label>Repository</label>
+        <input id="repo" value="Hanseooo/cloud-notepad" />
       </div>
 
-      <div class="controls-row" style="margin-bottom:20px">
-        <div style="flex:1">
-          <label for="branch">Branch</label>
+      <div style="display:flex; gap:10px">
+        <div class="field">
+          <label>Branch</label>
           <input id="branch" value="main" />
         </div>
-        <div style="width:120px">
-          <label for="filename">File</label>
-          <input id="filename" value="notes.txt" />
+        <div class="field">
+          <label>Folder</label>
+          <input id="folder" value="notes" />
         </div>
       </div>
 
       <div class="field">
-        <label for="folder">Folder</label>
-        <input id="folder" value="vault" />
+        <label>Filename</label>
+        <input id="filename" value="notes.txt" />
       </div>
 
-      <div style="display:flex; flex-direction: column; gap:16px; margin-top:24px;">
-        <div style="display:flex; gap:10px">
-          <button id="loadBtn" class="btn btn-ghost" style="flex:1" onclick="loadFile()">Load</button>
-          <button id="saveBtn" class="btn btn-primary" style="flex:1" onclick="saveFile()">Save</button>
+      <div style="display:flex; flex-direction: column; gap:10px;">
+        <button id="loadBtn" class="btn btn-ghost" onclick="loadFile()">Load Notes</button>
+        <button id="saveBtn" class="btn btn-primary" onclick="saveFile()">Save Changes</button>
+        
+        <div class="image-section">
+          <label>Image Assets</label>
+          <div style="display:flex; gap:5px; margin-bottom:10px">
+            <button class="btn btn-ghost btn-sm" style="flex:1; padding:5px;" onclick="document.getElementById('imgInput').click()">Upload</button>
+            <button class="btn btn-ghost btn-sm" style="flex:1; padding:5px;" onclick="refreshImages()">Refresh</button>
+          </div>
+          <input type="file" id="imgInput" style="display:none" accept="image/*" onchange="uploadImage(this)" />
+          <div id="imageGrid" class="image-grid"></div>
         </div>
-        <button id="clearBtn" class="btn btn-ghost" onclick="clearText()">Clear Draft</button>
 
-        <div id="status" class="status" aria-live="polite">
-          <div class="spinner" id="spinner" style="display:none"></div>
-          <div class="msg" id="statusMsg">System Ready</div>
+        <div id="status" class="status">
+          <div class="spinner" id="spinner"></div>
+          <span id="statusMsg">Ready</span>
         </div>
       </div>
     </aside>
 
-    <section class="editor-card">
-      <textarea id="editor" placeholder="Begin typing..."></textarea>
-    </section>
+    <div class="editor-container">
+      <div class="editor-header">
+        <button class="tab-btn active" id="writeTab" onclick="switchTab('write')">Write</button>
+        <button class="tab-btn" id="previewTab" onclick="switchTab('preview')">Preview</button>
+      </div>
+      <textarea id="editor" placeholder="Write your markdown here..."></textarea>
+      <div id="preview" class="markdown-body"></div>
+    </div>
   </main>
 </div>
-</body>
-</html>
 
 <script>
-  // Cached elements
-  const statusEl = document.getElementById('status');
+  const editor = document.getElementById('editor');
+  const preview = document.getElementById('preview');
   const statusMsg = document.getElementById('statusMsg');
   const spinner = document.getElementById('spinner');
-  const loadBtn = document.getElementById('loadBtn');
-  const saveBtn = document.getElementById('saveBtn');
-  const clearBtn = document.getElementById('clearBtn');
-  const editor = document.getElementById('editor');
-  const token = document.getElementById('token');
-  const repo = document.getElementById('repo');
-  const branch = document.getElementById('branch');
-  const folder = document.getElementById('folder');
-  const filename = document.getElementById('filename');
 
-  function setStatus(msg, type = 'muted') {
-    statusEl.classList.remove('success','error');
-    if (type === 'success') statusEl.classList.add('success');
-    if (type === 'error') statusEl.classList.add('error');
+  // Keyboard Shortcuts
+  window.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      saveFile();
+    }
+  });
 
-    // animate message
-    statusMsg.style.opacity = 0; 
-    setTimeout(() => { statusMsg.textContent = msg; statusMsg.style.opacity = 1; }, 120);
+  function setStatus(msg, type = '') {
+    statusMsg.textContent = msg;
+    statusMsg.style.color = type === 'error' ? 'var(--error)' : (type === 'success' ? 'var(--success)' : 'var(--muted)');
   }
 
-  function setLoading(loading, hint = '') {
-    if (loading) {
-      spinner.style.display = 'inline-block';
-      loadBtn.disabled = true; saveBtn.disabled = true; clearBtn.disabled = true;
-      setStatus(hint || 'Working...', 'muted');
-    } else {
-      spinner.style.display = 'none';
-      loadBtn.disabled = false; saveBtn.disabled = false; clearBtn.disabled = false;
-    }
+  function setLoading(active) {
+    spinner.style.display = active ? 'block' : 'none';
   }
 
   function cfg() {
     return {
-      token: token.value.trim(),
-      repo: repo.value.trim(),
-      branch: branch.value.trim(),
-      folder: folder.value.trim(),
-      file: filename.value.trim(),
+      token: document.getElementById('token').value.trim(),
+      repo: document.getElementById('repo').value.trim(),
+      branch: document.getElementById('branch').value.trim(),
+      folder: document.getElementById('folder').value.trim(),
+      file: document.getElementById('filename').value.trim(),
       text: editor.value
     };
   }
 
+  function switchTab(mode) {
+    const isWrite = mode === 'write';
+    document.getElementById('writeTab').classList.toggle('active', isWrite);
+    document.getElementById('previewTab').classList.toggle('active', !isWrite);
+    editor.style.display = isWrite ? 'block' : 'none';
+    preview.style.display = isWrite ? 'none' : 'block';
+    if (!isWrite) preview.innerHTML = marked.parse(editor.value);
+  }
+
   async function loadFile() {
-    const { token: t, repo: r, branch: b, folder: f, file } = cfg();
-    const path = f ? `${f}/${file}` : file;
-
-    setLoading(true, 'Loading file...');
+    const { token, repo, branch, folder, file } = cfg();
+    const path = folder ? `${folder}/${file}` : file;
+    setLoading(true);
     try {
-      const res = await fetch(`https://api.github.com/repos/${r}/contents/${path}?ref=${b}`, {
-        headers: { Authorization: `Bearer ${t}`, Accept: 'application/vnd.github+json' }
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-
-      if (!res.ok) throw new Error('File not found or access denied');
-
+      if (!res.ok) throw new Error('Note not found');
       const j = await res.json();
-      editor.value = atob(j.content.replace(/\n/g, ''));
-      editor.classList.add('flash');
-      setTimeout(() => editor.classList.remove('flash'), 900);
-
-      setStatus('File loaded successfully', 'success');
-    } catch (e) {
-      setStatus(e.message || 'Load failed', 'error');
-    } finally {
-      setLoading(false);
-    }
+      editor.value = atob(j.content);
+      setStatus('Notes loaded', 'success');
+      refreshImages(); // Auto-refresh images when loading repo
+    } catch (e) { setStatus(e.message, 'error'); }
+    finally { setLoading(false); }
   }
 
   async function saveFile() {
-    const { token: t, repo: r, branch: b, folder: f, file, text } = cfg();
-    const path = f ? `${f}/${file}` : file;
-    let sha;
-
-    setLoading(true, 'Saving file...');
+    const { token, repo, branch, folder, file, text } = cfg();
+    const path = folder ? `${folder}/${file}` : file;
+    setLoading(true);
     try {
-      // get existing sha if present
-      try {
-        const check = await fetch(`https://api.github.com/repos/${r}/contents/${path}?ref=${b}`, { headers: { Authorization: `Bearer ${t}` } });
-        if (check.ok) sha = (await check.json()).sha;
-      } catch (e) { /* ignore */ }
-
-      const rres = await fetch(`https://api.github.com/repos/${r}/contents/${path}`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${t}`, Accept: 'application/vnd.github+json' },
-        body: JSON.stringify({ message: `Update ${file}`, content: btoa(text), branch: b, ...(sha && { sha }) })
+      let sha;
+      const check = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      if (check.ok) sha = (await check.json()).sha;
 
-      if (!rres.ok) {
-        const err = await rres.json().catch(() => null);
-        throw new Error((err && err.message) || 'Save failed');
-      }
-
-      setStatus('File saved successfully', 'success');
-    } catch (e) {
-      setStatus(e.message || 'Save failed', 'error');
-    } finally {
-      setLoading(false);
-    }
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ message: 'Sync notes', content: btoa(text), branch, sha })
+      });
+      if (!res.ok) throw new Error('Sync failed');
+      setStatus('Changes saved', 'success');
+    } catch (e) { setStatus(e.message, 'error'); }
+    finally { setLoading(false); }
   }
 
-  function clearText() {
-    editor.value = '';
-    editor.classList.add('flash');
-    setTimeout(() => editor.classList.remove('flash'), 900);
-    setStatus('Editor cleared', 'muted');
+  async function refreshImages() {
+    const { token, repo, branch, folder } = cfg();
+    try {
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${folder}?ref=${branch}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const files = await res.json();
+      const imgs = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name));
+      
+      const grid = document.getElementById('imageGrid');
+      grid.innerHTML = '';
+      imgs.forEach(img => {
+        const card = document.createElement('div');
+        card.className = 'img-card';
+        card.onclick = () => {
+          navigator.clipboard.writeText(`![${img.name}](${img.path})`);
+          setStatus('Markdown link copied!');
+        };
+        card.innerHTML = `<img src="${img.download_url}"><div class="img-name">${img.name}</div>`;
+        grid.appendChild(card);
+      });
+    } catch (e) { console.error('Gallery sync failed'); }
   }
 
-  // subtle auto-save hint (non-invasive): show pulse on save button after editing
-  let typingTimer; 
-  editor.addEventListener('input', () => {
-    saveBtn.classList.add('pulse');
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => saveBtn.classList.remove('pulse'), 900);
-  });
+  async function uploadImage(input) {
+    if (!input.files[0]) return;
+    const file = input.files[0];
+    const { token, repo, branch, folder } = cfg();
+    const path = folder ? `${folder}/${file.name}` : file.name;
 
-  // initial entrance
-  window.addEventListener('load', () => { document.querySelector('header').style.opacity = 1; });
+    setLoading(true);
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const content = e.target.result.split(',')[1];
+      try {
+        let sha;
+        const check = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (check.ok) sha = (await check.json()).sha;
+
+        await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ message: `Upload ${file.name}`, content, branch, sha })
+        });
+        setStatus('Image uploaded', 'success');
+        refreshImages();
+      } catch (err) { setStatus('Upload failed', 'error'); }
+      finally { setLoading(false); }
+    };
+    reader.readAsDataURL(file);
+  }
 </script>
-
 </body>
 </html>
